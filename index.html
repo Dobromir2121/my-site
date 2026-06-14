@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAK</title>
+    
+    <meta name="theme-color" content="#050505">
+    <meta name="color-scheme" content="dark">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(10, 10, 10, 0.75);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --text-main: #ffffff;
+            --text-muted: #555555;
+            --shadow-glow: 0 0 35px rgba(255, 255, 255, 0.08);
+            --transition-fast: 0.25s ease;
+            --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(circle at center, #101012 0%, #030303 100%);
+        }
+
+        /* Начальный экран (Overlay) */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030303;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity var(--transition-slow), transform var(--transition-slow);
+        }
+
+        #overlay h1 {
+            font-size: 2.5rem;
+            font-weight: 200;
+            letter-spacing: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-main);
+            animation: pulse 2.5s infinite ease-in-out;
+            user-select: none;
+            opacity: 0.6;
+        }
+
+        #overlay.is-leaving {
+            opacity: 0;
+            transform: scale(1.02);
+            pointer-events: none;
+        }
+
+        /* Главный контент */
+        main {
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity var(--transition-slow) 0.2s, transform var(--transition-slow) 0.2s;
+        }
+
+        body.is-entered main {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 32px;
+            padding: 50px 40px;
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Аватар: Стилизованные ЧБ глаза */
+        #avatar-wrapper {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #08080a;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        body.entered-done #avatar-wrapper {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Отрисовка глаз с помощью CSS векторов */
+        .eyes-container {
+            width: 90px;
+            height: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0.75;
+            transition: transform 0.15s ease-out;
+        }
+
+        .eye {
+            width: 38px;
+            height: 20px;
+            background: transparent;
+            border: 2px solid #ffffff;
+            border-radius: 50% 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Зрачки */
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ffffff;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Сетка поверх аватара */
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* НИК С АНИМИРОВАННЫМ ГРАДИЕНТОМ */
+        #who {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            
+            /* Градиентный текст */
+            background: linear-gradient(270deg, #ffffff, #666666, #ffffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* Анимация перелива */
+            animation: gradientMove 5s linear infinite;
+        }
+
+        #footer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-weight: 400;
+            letter-spacing: 0.05rem;
+            min-height: 18px;
+            display: inline-block;
+        }
+
+        /* Кнопки */
+        .flexbox {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .flexbox a {
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .flexbox button {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: #666666;
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 0.05rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .flexbox button:hover {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+        }
+
+        /* Анимации */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Анимация движения градиента */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 400px) {
+            .card { width: 90vw; padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <h1>Tap</h1>
+    </div>
+
+    <div id="bg-canvas"></div>
+
+    <main>
+        <section class="card" aria-label="Profile">
+            
+            <div id="avatar-wrapper">
+                <div class="eyes-container">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                </div>
+                <div class="avatar-overlay"></div>
+            </div>
+            
+            <span id="who">MAK</span>
+            
+            <span id="footer">Loading...</span>
+            
+            <div class="flexbox">
+                <a href="https://t.me/samayakrutayassilka" target="_blank" rel="noopener noreferrer">
+                    <button>Telegram</button>
+                </a>
+                <a href="https://www.tiktok.com/@colobok98?_r=1&_t=ZS-97DNOqvWjif" target="_blank" rel="noopener noreferrer">
+                    <button>TikTok</button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const overlay = document.getElementById("overlay");
+            const footerText = document.getElementById("footer");
+            const eyesContainer = document.querySelector(".eyes-container");
+            const pupils = document.querySelectorAll(".pupil");
+
+            const phrases = [
+                "Добро пожаловать на мою страницу!",
+                "Здесь могла быть ваша реклама :)"
+            ];
+
+            function changeFooterText() {
+                const randomIndex = Math.floor(Math.random() * phrases.length);
+                footerText.textContent = phrases[randomIndex];
+            }
+
+            // Интерактив: Взгляд и легкий наклон глаз за курсором мыши
+            document.addEventListener("mousemove", (e) => {
+                if (!document.body.classList.contains('is-entered')) return;
+                
+                const rect = eyesContainer.getBoundingClientRect();
+                const eyesX = rect.left + rect.width / 2;
+                const eyesY = rect.top + rect.height / 2;
+                
+                const moveX = (e.clientX - eyesX) / 25;
+                const moveY = (e.clientY - eyesY) / 25;
+                
+                // Ограничиваем движение зрачков внутри глазного яблока
+                const limitedX = Math.min(Math.max(moveX, -6), 6);
+                const limitedY = Math.min(Math.max(moveY, -4), 4);
+                
+                // Двигаем зрачки
+                pupils.forEach(pupil => {
+                    pupil.style.transform = `translate(${limitedX}px, ${limitedY}px)`;
+                });
+
+                // Легкий наклон контейнера с глазами для объема
+                eyesContainer.style.transform = `translate(${limitedX * 0.5}px, ${limitedY * 0.5}px)`;
+            });
+
+            overlay.addEventListener("click", function () {
+                overlay.classList.add('is-leaving');
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                }, 800);
+
+                document.body.classList.add('is-entered');
+                changeFooterText();
+
+                window.__enterDoneTimer = window.setTimeout(() => {
+                    document.body.classList.add('entered-done');
+                }, 1400);
+            });
+        });
+    </script>
+</body>
+</html>
