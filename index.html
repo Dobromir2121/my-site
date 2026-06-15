@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAK</title>
-    
     <meta name="theme-color" content="#050505">
     <meta name="color-scheme" content="dark">
-
     <style>
         * {
             margin: 0;
@@ -26,6 +24,7 @@
             --shadow-glow: 0 0 35px rgba(255, 255, 255, 0.08);
             --transition-fast: 0.25s ease;
             --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            --eye-transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         body {
@@ -112,7 +111,7 @@
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
         }
 
-        /* Аватар: Стилизованные ЧБ глаза */
+        /* Аватар */
         #avatar-wrapper {
             width: 130px;
             height: 130px;
@@ -123,8 +122,10 @@
             background: #08080a;
             position: relative;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 12px;
             transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
 
@@ -133,20 +134,30 @@
             box-shadow: var(--shadow-glow);
         }
 
-        /* Отрисовка глаз с помощью CSS векторов */
-        .eyes-container {
+        /* Лицо (Контейнер для глаз и рта) */
+        .face-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
             width: 90px;
+            opacity: 0.85;
+            transition: transform 0.3s ease;
+        }
+
+        /* Контейнер глаз */
+        .eyes-container {
+            width: 100%;
             height: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            opacity: 0.75;
-            transition: transform 0.15s ease-out;
         }
 
+        /* Базовый глаз */
         .eye {
             width: 38px;
-            height: 20px;
+            height: 22px;
             background: transparent;
             border: 2px solid #ffffff;
             border-radius: 50% 50%;
@@ -155,6 +166,8 @@
             justify-content: center;
             align-items: center;
             box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: var(--eye-transition);
         }
 
         /* Зрачки */
@@ -164,7 +177,84 @@
             background: #ffffff;
             border-radius: 50%;
             box-shadow: 0 0 8px #ffffff;
-            transition: transform 0.1s ease-out;
+            position: absolute;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.3s ease, height 0.3s ease;
+        }
+
+        /* МИНИМАЛИСТИЧНЫЙ РОТ */
+        .mouth {
+            width: 24px;
+            height: 2px;
+            background: #ffffff;
+            border-radius: 1px;
+            transition: var(--eye-transition);
+        }
+
+        /* СИСТЕМА ЭМОЦИЙ И АНИМАЦИЙ */
+        
+        /* 1. Моргание */
+        .eye.blink {
+            height: 1px !important;
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            background: #ffffff;
+        }
+        .eye.blink .pupil {
+            opacity: 0;
+        }
+
+        /* 2. Веселый (Happy) */
+        .face-container.happy .eye {
+            border-radius: 100% 100% 0 0;
+            height: 16px;
+            transform: translateY(-2px);
+        }
+        .face-container.happy .pupil {
+            transform: translateY(2px) !important;
+        }
+        .face-container.happy .mouth {
+            height: 8px;
+            width: 26px;
+            background: transparent;
+            border: 2px solid #ffffff;
+            border-top: none;
+            border-radius: 0 0 14px 14px;
+        }
+
+        /* 3. Грустный (Sad) */
+        .face-container.sad .eye {
+            border-radius: 20% 20% 80% 80%;
+        }
+        .face-container.sad .eye:first-child { transform: rotate(-6deg); }
+        .face-container.sad .eye:last-child { transform: rotate(6deg); }
+        .face-container.sad .pupil {
+            transform: translateY(2px) !important;
+        }
+        .face-container.sad .mouth {
+            height: 6px;
+            width: 22px;
+            background: transparent;
+            border: 2px solid #ffffff;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            transform: translateY(2px);
+        }
+
+        /* 4. Злой (Angry) */
+        .face-container.angry .eye {
+            border-radius: 80% 80% 20% 20%;
+        }
+        .face-container.angry .eye:first-child { transform: rotate(12deg); }
+        .face-container.angry .eye:last-child { transform: rotate(-12deg); }
+        .face-container.angry .pupil {
+            width: 7px;
+            height: 7px;
+        }
+        .face-container.angry .mouth {
+            width: 18px;
+            height: 3px;
+            background: #ffffff;
+            transform: translateY(-1px) rotate(-3deg);
         }
 
         /* Сетка поверх аватара */
@@ -179,21 +269,17 @@
             pointer-events: none;
         }
 
-        /* НИК С АНИМИРОВАННЫМ ГРАДИЕНТОМ */
+        /* НИК */
         #who {
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: 0.2rem;
             margin-bottom: 12px;
             text-transform: uppercase;
-            
-            /* Градиентный текст */
             background: linear-gradient(270deg, #ffffff, #666666, #ffffff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            
-            /* Анимация перелива */
             animation: gradientMove 5s linear infinite;
         }
 
@@ -205,6 +291,7 @@
             letter-spacing: 0.05rem;
             min-height: 18px;
             display: inline-block;
+            transition: color 0.3s ease;
         }
 
         /* Кнопки */
@@ -241,13 +328,11 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
         }
 
-        /* Анимации */
         @keyframes pulse {
             0%, 100% { opacity: 0.4; }
             50% { opacity: 0.7; }
         }
 
-        /* Анимация движения градиента */
         @keyframes gradientMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -269,17 +354,18 @@
 
     <main>
         <section class="card" aria-label="Profile">
-            
             <div id="avatar-wrapper">
-                <div class="eyes-container">
-                    <div class="eye"><div class="pupil"></div></div>
-                    <div class="eye"><div class="pupil"></div></div>
+                <div class="face-container">
+                    <div class="eyes-container">
+                        <div class="eye"><div class="pupil"></div></div>
+                        <div class="eye"><div class="pupil"></div></div>
+                    </div>
+                    <div class="mouth"></div>
                 </div>
                 <div class="avatar-overlay"></div>
             </div>
             
             <span id="who">Добрыня</span>
-            
             <span id="footer">Loading...</span>
             
             <div class="flexbox">
@@ -297,43 +383,129 @@
         document.addEventListener("DOMContentLoaded", function () {
             const overlay = document.getElementById("overlay");
             const footerText = document.getElementById("footer");
-            const eyesContainer = document.querySelector(".eyes-container");
+            const faceContainer = document.querySelector(".face-container");
+            const eyes = document.querySelectorAll(".eye");
             const pupils = document.querySelectorAll(".pupil");
 
+            // Список фраз для автоматической перемотки
             const phrases = [
                 "Добро пожаловать на мою страницу!",
-                "Здесь могла быть ваша реклама :)"
+                "Спасибо, что заглянул!",
+                "Здесь могла быть ваша реклама :)",
+                "Переходи по ссылкам ниже"
             ];
 
-            function changeFooterText() {
-                const randomIndex = Math.floor(Math.random() * phrases.length);
-                footerText.textContent = phrases[randomIndex];
+            const emotions = ['normal', 'happy', 'sad', 'angry', 'surprised'];
+            let currentEmotion = 'normal';
+            let isPageActive = false;
+            let currentPhraseIndex = -1;
+
+            // --- АВТОМАТИЧЕСКАЯ ПЕРЕМОТКА ОПИСАНИЯ (ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ) ---
+            function typePhrase(text, callback) {
+                let i = 0;
+                footerText.textContent = "";
+                
+                function type() {
+                    if (!isPageActive) return;
+                    if (i < text.length) {
+                        footerText.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(type, 60); // Скорость печати
+                    } else if (callback) {
+                        setTimeout(callback, 3500); // Время отображения готовой фразы (3.5 сек)
+                    }
+                }
+                type();
             }
 
-            // Интерактив: Взгляд и легкий наклон глаз за курсором мыши
-            document.addEventListener("mousemove", (e) => {
-                if (!document.body.classList.contains('is-entered')) return;
+            function erasePhrase(callback) {
+                function erase() {
+                    if (!isPageActive) return;
+                    let text = footerText.textContent;
+                    if (text.length > 0) {
+                        footerText.textContent = text.substring(0, text.length - 1);
+                        setTimeout(erase, 30); // Скорость стирания
+                    } else if (callback) {
+                        setTimeout(callback, 300); // Пауза перед новой строкой
+                    }
+                }
+                erase();
+            }
+
+            function startDescriptionTicker() {
+                if (!isPageActive) return;
+
+                // Защита от повторения одной и той же фразы два раза подряд
+                let nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * phrases.length);
+                } while (nextIndex === currentPhraseIndex && phrases.length > 1);
                 
-                const rect = eyesContainer.getBoundingClientRect();
-                const eyesX = rect.left + rect.width / 2;
-                const eyesY = rect.top + rect.height / 2;
-                
-                const moveX = (e.clientX - eyesX) / 25;
-                const moveY = (e.clientY - eyesY) / 25;
-                
-                // Ограничиваем движение зрачков внутри глазного яблока
-                const limitedX = Math.min(Math.max(moveX, -6), 6);
-                const limitedY = Math.min(Math.max(moveY, -4), 4);
-                
-                // Двигаем зрачки
+                currentPhraseIndex = nextIndex;
+                const targetText = phrases[currentPhraseIndex];
+
+                typePhrase(targetText, () => {
+                    erasePhrase(() => {
+                        startDescriptionTicker();
+                    });
+                });
+            }
+
+            // --- ЖИВОЕ ПОВЕДЕНИЕ ЛИЦА ---
+
+            // 1. Взгляды по сторонам
+            function lookAround() {
+                if (!isPageActive) return;
+
+                if (currentEmotion === 'happy' || currentEmotion === 'sad') {
+                    setTimeout(lookAround, Math.random() * 2000 + 1000);
+                    return;
+                }
+
+                const moveX = (Math.random() - 0.5) * 12;
+                const moveY = (Math.random() - 0.5) * 8;
+
                 pupils.forEach(pupil => {
-                    pupil.style.transform = `translate(${limitedX}px, ${limitedY}px)`;
+                    pupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
                 });
 
-                // Легкий наклон контейнера с глазами для объема
-                eyesContainer.style.transform = `translate(${limitedX * 0.5}px, ${limitedY * 0.5}px)`;
-            });
+                faceContainer.style.transform = `translate(${moveX * 0.2}px, ${moveY * 0.2}px)`;
 
+                setTimeout(lookAround, Math.random() * 3000 + 1000);
+            }
+
+            // 2. Реалистичное моргание
+            function blink() {
+                if (!isPageActive) return;
+
+                eyes.forEach(eye => eye.classList.add('blink'));
+
+                setTimeout(() => {
+                    eyes.forEach(eye => eye.classList.remove('blink'));
+                }, 120);
+
+                setTimeout(blink, Math.random() * 4000 + 3000);
+            }
+
+            // 3. Динамическая смена эмоций
+            function changeEmotion() {
+                if (!isPageActive) return;
+
+                emotions.forEach(emo => faceContainer.classList.remove(emo));
+
+                const nextEmotion = emotions[Math.floor(Math.random() * emotions.length)];
+                currentEmotion = nextEmotion;
+                
+                faceContainer.classList.add(nextEmotion);
+
+                pupils.forEach(pupil => {
+                    pupil.style.transform = 'translate(0, 0)';
+                });
+
+                setTimeout(changeEmotion, Math.random() * 4000 + 4000);
+            }
+
+            // --- ЛОГИКА ВХОДА ---
             overlay.addEventListener("click", function () {
                 overlay.classList.add('is-leaving');
                 setTimeout(() => {
@@ -341,10 +513,17 @@
                 }, 800);
 
                 document.body.classList.add('is-entered');
-                changeFooterText();
 
                 window.__enterDoneTimer = window.setTimeout(() => {
                     document.body.classList.add('entered-done');
+                    
+                    isPageActive = true;
+                    
+                    // Одновременный запуск бегущей строки и анимаций аватара
+                    startDescriptionTicker();
+                    lookAround();
+                    blink();
+                    changeEmotion();
                 }, 1400);
             });
         });
