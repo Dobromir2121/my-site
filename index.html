@@ -7,6 +7,7 @@
     <title>MAK</title>
     <meta name="theme-color" content="#050505">
     <meta name="color-scheme" content="dark">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -18,9 +19,9 @@
         :root {
             --bg-color: #050505;
             --card-bg: rgba(10, 10, 10, 0.75);
-            --card-border: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
-            --text-muted: #555555;
+            --text-muted: #888888; /* Сделано ярче (было #555), чтобы текст лучше читался */
             --shadow-glow: 0 0 35px rgba(255, 255, 255, 0.08);
             --transition-fast: 0.25s ease;
             --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -66,14 +67,15 @@
         }
 
         #overlay h1 {
-            font-size: 2.5rem;
-            font-weight: 200;
-            letter-spacing: 0.8rem;
+            font-size: 2.8rem; /* Чуть увеличили */
+            font-weight: 300; /* Более выразительный вес */
+            激 letter-spacing: 1rem; /* Сделали более размашистым */
             text-transform: uppercase;
             color: var(--text-main);
             animation: pulse 2.5s infinite ease-in-out;
             user-select: none;
-            opacity: 0.6;
+            opacity: 0.8; /* Подняли базовую видимость */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Легкое неоновое свечение */
         }
 
         #overlay.is-leaving {
@@ -191,8 +193,6 @@
         }
 
         /* СИСТЕМА ЭМОЦИЙ И АНИМАЦИЙ */
-        
-        /* 1. Моргание */
         .eye.blink {
             height: 1px !important;
             border-top-width: 1px;
@@ -203,7 +203,6 @@
             opacity: 0;
         }
 
-        /* 2. Веселый (Happy) */
         .face-container.happy .eye {
             border-radius: 100% 100% 0 0;
             height: 16px;
@@ -221,7 +220,6 @@
             border-radius: 0 0 14px 14px;
         }
 
-        /* 3. Грустный (Sad) */
         .face-container.sad .eye {
             border-radius: 20% 20% 80% 80%;
         }
@@ -240,7 +238,6 @@
             transform: translateY(2px);
         }
 
-        /* 4. Злой (Angry) */
         .face-container.angry .eye {
             border-radius: 80% 80% 20% 20%;
         }
@@ -271,27 +268,30 @@
 
         /* НИК */
         #who {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.2rem;
+            font-size: 2rem; /* Увеличен размер */
+            font-weight: 800; /* Жирность на максимум */
+            激 letter-spacing: 0.25rem;
             margin-bottom: 12px;
             text-transform: uppercase;
-            background: linear-gradient(270deg, #ffffff, #666666, #ffffff);
+            background: linear-gradient(270deg, #ffffff, #aaaaaa, #ffffff); /* Сделали средний цвет ярче */
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradientMove 5s linear infinite;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
         }
 
+        /* ОПИСАНИЕ (Бегущая строка) */
         #footer {
-            font-size: 0.8rem;
+            font-size: 0.9rem; /* Чуть крупнее */
             color: var(--text-muted);
             margin-bottom: 35px;
-            font-weight: 400;
-            letter-spacing: 0.05rem;
-            min-height: 18px;
+            font-weight: 500; /* Изменено с 400 на 500 для четкости */
+            letter-spacing: 0.04rem;
+            min-height: 20px;
             display: inline-block;
             transition: color 0.3s ease;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5); /* Тень для читаемости */
         }
 
         /* Кнопки */
@@ -309,28 +309,43 @@
 
         .flexbox button {
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 14px;
             border: 1px solid var(--card-border);
-            background: transparent;
-            color: #666666;
-            font-size: 0.95rem;
-            font-weight: 400;
+            background: rgba(255, 255, 255, 0.02);
+            color: #aeaeae; /* Изменено с тусклого #666 на благородный светлый */
+            font-size: 1rem; /* Слегка увеличили */
+            font-weight: 600; /* Сделали текст кнопок жирнее */
             letter-spacing: 0.05rem;
             cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Отступ между иконкой и текстом */
             transition: all var(--transition-fast);
+        }
+
+        /* Иконки внутри кнопок */
+        .flexbox button i {
+            font-size: 1.2rem;
+            transition: transform var(--transition-fast);
         }
 
         .flexbox button:hover {
             background: #ffffff;
             color: #000000;
             border-color: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.12);
+        }
+
+        /* Легкий интерактив для иконок при наведении */
+        .flexbox button:hover i {
+            transform: scale(1.1);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.7; }
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
         }
 
         @keyframes gradientMove {
@@ -369,11 +384,11 @@
             <span id="footer">Loading...</span>
             
             <div class="flexbox">
-                <a href="https://t.me/samayakrutayassilka" target="_blank" rel="noopener noreferrer">
-                    <button>Telegram</button>
+                <a href="https://t.me/samyykrutoyvmire" target="_blank" rel="noopener noreferrer">
+                    <button><i class="fa-brands fa-telegram"></i> Telegram</button>
                 </a>
                 <a href="https://www.tiktok.com/@colobok98?_r=1&_t=ZS-97DNOqvWjif" target="_blank" rel="noopener noreferrer">
-                    <button>TikTok</button>
+                    <button><i class="fa-brands fa-tiktok"></i> TikTok</button>
                 </a>
             </div>
         </section>
@@ -387,20 +402,18 @@
             const eyes = document.querySelectorAll(".eye");
             const pupils = document.querySelectorAll(".pupil");
 
-            // Список фраз для автоматической перемотки
             const phrases = [
-                "Добро пожаловать на мою страницу!",
+                "Добро пожаловать на страницу!",
                 "Спасибо, что заглянул!",
-                "Здесь могла быть ваша реклама :)",
-                "Переходи по ссылкам ниже"
+                "Переходи по ссылкам ниже",
+                "Здесь могла быть ваша реклама :)"
             ];
 
             const emotions = ['normal', 'happy', 'sad', 'angry', 'surprised'];
             let currentEmotion = 'normal';
             let isPageActive = false;
-            let currentPhraseIndex = -1;
+            let currentPhraseIndex = 0;
 
-            // --- АВТОМАТИЧЕСКАЯ ПЕРЕМОТКА ОПИСАНИЯ (ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ) ---
             function typePhrase(text, callback) {
                 let i = 0;
                 footerText.textContent = "";
@@ -410,9 +423,9 @@
                     if (i < text.length) {
                         footerText.textContent += text.charAt(i);
                         i++;
-                        setTimeout(type, 60); // Скорость печати
+                        setTimeout(type, 60);
                     } else if (callback) {
-                        setTimeout(callback, 3500); // Время отображения готовой фразы (3.5 сек)
+                        setTimeout(callback, 3500);
                     }
                 }
                 type();
@@ -424,9 +437,9 @@
                     let text = footerText.textContent;
                     if (text.length > 0) {
                         footerText.textContent = text.substring(0, text.length - 1);
-                        setTimeout(erase, 30); // Скорость стирания
+                        setTimeout(erase, 30);
                     } else if (callback) {
-                        setTimeout(callback, 300); // Пауза перед новой строкой
+                        setTimeout(callback, 300);
                     }
                 }
                 erase();
@@ -434,26 +447,16 @@
 
             function startDescriptionTicker() {
                 if (!isPageActive) return;
-
-                // Защита от повторения одной и той же фразы два раза подряд
-                let nextIndex;
-                do {
-                    nextIndex = Math.floor(Math.random() * phrases.length);
-                } while (nextIndex === currentPhraseIndex && phrases.length > 1);
-                
-                currentPhraseIndex = nextIndex;
                 const targetText = phrases[currentPhraseIndex];
 
                 typePhrase(targetText, () => {
                     erasePhrase(() => {
+                        currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
                         startDescriptionTicker();
                     });
                 });
             }
 
-            // --- ЖИВОЕ ПОВЕДЕНИЕ ЛИЦА ---
-
-            // 1. Взгляды по сторонам
             function lookAround() {
                 if (!isPageActive) return;
 
@@ -474,7 +477,6 @@
                 setTimeout(lookAround, Math.random() * 3000 + 1000);
             }
 
-            // 2. Реалистичное моргание
             function blink() {
                 if (!isPageActive) return;
 
@@ -487,7 +489,6 @@
                 setTimeout(blink, Math.random() * 4000 + 3000);
             }
 
-            // 3. Динамическая смена эмоций
             function changeEmotion() {
                 if (!isPageActive) return;
 
@@ -505,7 +506,6 @@
                 setTimeout(changeEmotion, Math.random() * 4000 + 4000);
             }
 
-            // --- ЛОГИКА ВХОДА ---
             overlay.addEventListener("click", function () {
                 overlay.classList.add('is-leaving');
                 setTimeout(() => {
@@ -516,10 +516,8 @@
 
                 window.__enterDoneTimer = window.setTimeout(() => {
                     document.body.classList.add('entered-done');
-                    
                     isPageActive = true;
                     
-                    // Одновременный запуск бегущей строки и анимаций аватара
                     startDescriptionTicker();
                     lookAround();
                     blink();
